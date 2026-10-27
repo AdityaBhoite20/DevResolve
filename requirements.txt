@@ -1,0 +1,9 @@
+sentence-transformers
+numpy
+pandas
+requests
+beautifulsoup4
+python-dotenv
+openai
+streamlit
+pytest

@@ -1,0 +1,26 @@
+venv/
+.env
+__pycache__/
+.pytest_cache/
+data/raw/
+data/processed/
+indexes/
+logs/
+*.pyc
+.vscode/
+.DS_Store
+Thumbs.db
+__pycache__/
+*.py[cod]
+.pytest_cache/
+venv/
+venv310/
+.venv/
+experiments/answers_cache.jsonl
+# Local answer cache and intermediate results
+experiments/answers_cache.jsonl
+experiments/answers_previous.csv
+experiments/results_before_*.csv
+
+# Local debugging and grading utilities
+scratch/

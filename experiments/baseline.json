@@ -1,0 +1,7 @@
+{
+  "recall_at_5": 0.9523809523809523,
+  "mode": "hybrid",
+  "chunk_size": 800,
+  "n_questions": 42,
+  "saved_at": "2026-10-27 17:35"
+}

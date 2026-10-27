@@ -1,0 +1,5 @@
+metric,value,n
+abstained_correctly_on_unanswerable,0.778,9
+abstained_wrongly_on_answerable,0.071,42
+answers_with_valid_citations_auto,0.538,39
+answers_with_gold_evidence_in_context,0.949,39

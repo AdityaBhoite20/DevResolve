@@ -1,0 +1,7 @@
+run_at,config_name,chunk_size,chunk_overlap,mode,embedding_model,n_chunks,n_answerable,n_unanswerable,recall_at_1,recall_at_3,recall_at_5,recall_at_10,recall_at_5_ci_low,recall_at_5_ci_high,mrr_at_10,mean_retrieval_ms,abstain_threshold,abstention_accuracy,false_abstain_rate,correct_abstain_rate
+2026-10-27 17:20:31,chunk500_vector,500,100,vector,all-MiniLM-L6-v2,4030,42,9,0.643,0.738,0.786,0.905,0.667,0.905,0.719,23.2,0.4,0.922,0.024,0.667
+2026-10-27 17:20:31,chunk500_hybrid,500,100,hybrid,all-MiniLM-L6-v2,4030,42,9,0.643,0.833,0.881,0.929,0.786,0.976,0.74,32.6,0.4,0.922,0.024,0.667
+2026-10-27 17:20:31,chunk800_vector,800,150,vector,all-MiniLM-L6-v2,2583,42,9,0.738,0.857,0.905,0.952,0.81,0.976,0.81,41.0,0.4,0.922,0.048,0.778
+2026-10-27 17:20:31,chunk800_hybrid,800,150,hybrid,all-MiniLM-L6-v2,2583,42,9,0.714,0.881,0.952,0.952,0.881,1.0,0.801,45.9,0.4,0.922,0.048,0.778
+2026-10-27 17:20:31,chunk1200_vector,1200,240,vector,all-MiniLM-L6-v2,1775,42,9,0.738,0.881,0.905,1.0,0.81,0.976,0.816,31.7,0.4,0.941,0.048,0.889
+2026-10-27 17:20:31,chunk1200_hybrid,1200,240,hybrid,all-MiniLM-L6-v2,1775,42,9,0.69,0.881,0.929,0.976,0.833,1.0,0.803,31.5,0.4,0.941,0.048,0.889
