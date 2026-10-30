@@ -1,458 +1,345 @@
 ﻿question_id,question_type,is_answerable,question,expected_answer_points,answer,abstained,abstain_reason,top_vector_score,gold_in_context,citation_ok,cited_ids,invalid_ids,cited_urls,retrieval_ms,llm_seconds,retries,sample_for_grading,manual_correct,manual_grounded,manual_citations_ok,notes
 q01,error,True,What does ModuleNotFoundError mean in Python?,It is a subclass of ImportError ; It is raised by import when a module could not be located,"**Answer**  
-`ModuleNotFoundError` is a specific exception raised by Python’s import machinery when it cannot locate the module you are trying to import. It is a subclass of `ImportError` and is raised both when the module file is missing and when a `None` entry is found in `sys.modules` [1][3].
+A `ModuleNotFoundError` is a specific exception raised by Python’s import system when it cannot locate the requested module. It is a subclass of `ImportError` and is raised both when the module file is missing and when a `None` entry is found in `sys.modules` [1][3].  
 
 **Key points**  
-1. It indicates that the import system searched all configured locations and did not find the requested module.  
-2. It can also be triggered if `sys.modules` contains a `None` value for that module name, forcing the next import to fail.  
-3. The exception is raised during the import search phase, which may involve multiple intermediate imports for dotted module names [5].",False,,0.7042,True,True,"1,3,5",,docs.python.org/3/reference/import.html | docs.python.org/3/library/exceptions.html | docs.python.org/3/reference/import.html,14907.8,2.44,,True,,,,
-q02,concept,True,I installed a package with pip but import still fails. What should I check?,Make sure pip installed it into the same Python environment that runs the code (python -m pip) ; Use and activate a virtual environment consistently ; Python looks for modules on the module search path (sys.path),"**Answer**  
-If `import` still fails after installing a package with `pip`, check that the package was installed into the Python environment you are running. Verify that `pip` and the interpreter are from the same environment (system, virtualenv, or conda) and that the package name is correct.
+1. The import machinery searches for the module’s file or package and creates a module object if found [1].  
+2. If the search fails, Python raises `ModuleNotFoundError` to signal that the module could not be located [1].  
+3. The error can also be triggered by a `None` value in `sys.modules`, which forces the next import to fail [2][3].  
+4. Intermediate imports in a dotted path (e.g., `foo.bar.baz`) that fail also raise `ModuleNotFoundError` [5].",False,,0.7042,True,True,"1,2,3,5",,docs.python.org/3/reference/import.html | docs.python.org/3/reference/import.html | docs.python.org/3/library/exceptions.html | docs.python.org/3/reference/import.html,59199.6,5.87,0,True,,,,
+q02,concept,True,I installed a package with pip but import still fails. What should I check?,Make sure pip installed it into the same Python environment that runs the code (python -m pip) ; Use and activate a virtual environment consistently ; Python looks for modules on the module search path (sys.path),"**Likely cause**  
+The import may fail because the package was installed into a different Python environment than the one you are running, or pip did not actually install the package due to a misspelled name or missing pip installation [1][4].
 
-**Key points**  
-1. **Environment mismatch** – `pip` may have installed the package into a different Python installation or virtual environment than the one you are using to run your script.  
-2. **Correct package name** – ensure the name you passed to `pip` matches the module name you import.  
-3. **Installation confirmation** – run `python -m pip show <package>` to confirm the package is present and note its location.  
-4. **Virtual environment activation** – if using a virtual environment, activate it before running your script or using `python -m pip`.  
+**What to check**  
+1. Verify that you are using the same Python interpreter that pip installed the package into. If you are in a virtual environment, activate it before running your script and use `python -m pip show <package>` to confirm the installation location [3].  
+2. Ensure that pip is installed and available for the interpreter you are using; if not, run `python -m ensurepip --default-pip` to install it [2].  
+3. Double‑check the package name and spelling in your import statement against the name shown by `python -m pip show <package>`; a typo will cause the import to fail [1].
 
-These steps help confirm that the package is available to the interpreter that is executing your code.",False,,0.6301,True,False,,,,28.9,0.68,,False,,,,
+**Why this helps**  
+Python can have multiple interpreter instances (system‑wide, virtual environments, conda envs, etc.). Packages installed in one environment are invisible to another, so confirming the active environment and the presence of pip ensures the package is available where you expect it to be [4].",False,,0.6301,True,True,"1,2,3,4",,docs.python.org/3/installing/index.html | docs.python.org/3/installing/index.html | docs.python.org/3/tutorial/venv.html | docs.python.org/3/installing/index.html,111.1,0.88,0,False,,,,
 q03,traceback,True,"My script crashes with this:
 Traceback (most recent call last):
   File ""app.py"", line 1, in <module>
     import sklearn
 ModuleNotFoundError: No module named 'sklearn'
 What does it mean?",ModuleNotFoundError means the module could not be located by import ; Check that the package is installed in the active environment,"**Likely cause**  
-The interpreter cannot find the `sklearn` package in its module search path, so it raises `ModuleNotFoundError: No module named 'sklearn'` [2].
+The interpreter cannot find the `sklearn` package in its module search path, so it raises `ModuleNotFoundError: No module named 'sklearn'` [1].
 
 **What to check**  
 1. Verify that scikit‑learn is installed in the Python environment you are using.  
-2. Ensure that the environment’s `site-packages` directory (where third‑party packages are installed) is included in `sys.path` when the script runs.  
+2. Ensure that the environment’s `site-packages` directory (where third‑party packages are installed) is included in `sys.path` when the script runs [2].
 
 **Why this helps**  
-Python searches for modules first in built‑in modules, then in the directories listed in `sys.path`, which includes the script’s directory, `PYTHONPATH`, and the default site‑packages location. If `sklearn` is not present in any of those locations, the import fails [2].",False,,0.4629,False,True,2,,docs.python.org/3/tutorial/modules.html,36642.9,2.62,0.0,False,,,,
+Python looks for modules first in built‑in names, then in the directories listed in `sys.path`, which normally includes the `site-packages` directory where `sklearn` would reside. If the package is missing or the path is not present, the import fails.",False,,0.4629,False,True,"1,2",,docs.python.org/3/tutorial/modules.html | docs.python.org/3/tutorial/modules.html,36.2,1.48,0,False,,,,
 q04,error,True,What is the difference between IndexError and KeyError?,IndexError is raised when a sequence index is out of range ; KeyError is raised when a mapping (dictionary) key is not found,"**Answer**  
-`IndexError` is raised when you try to access a sequence (list, tuple, string, etc.) with an index that is outside its bounds. `KeyError` is raised when you try to access a mapping (dictionary, etc.) with a key that does not exist in that mapping. Both are subclasses of `LookupError` [1].
+IndexError is raised when a sequence subscript is out of range, such as accessing an element beyond the length of a list or tuple [3]. KeyError is raised when a mapping (dictionary) key is not found in the set of existing keys [4]. Both are subclasses of LookupError, the base class for invalid keys or indices [1].  
 
 **Key points**  
-1. `IndexError`: out‑of‑range sequence index [3].  
-2. `KeyError`: missing dictionary key [4].",False,,0.545,True,True,"1,3,4",,docs.python.org/3/library/exceptions.html | docs.python.org/3/library/exceptions.html | docs.python.org/3/library/exceptions.html,29.5,2.58,,False,,,,
+1. IndexError applies to sequences (lists, tuples, strings) when the index is too large or not an integer [3].  
+2. KeyError applies to mappings (dicts, sets) when the specified key does not exist [4].  
+3. Both inherit from LookupError, grouping errors related to invalid keys or indices [1].",False,,0.545,True,True,"1,3,4",,docs.python.org/3/library/exceptions.html | docs.python.org/3/library/exceptions.html | docs.python.org/3/library/exceptions.html,49.7,0.73,0,False,,,,
 q05,direct,True,"How do I handle an exception with try, except and finally?",Code in the try clause runs first ; An except clause handles a matching exception ; The finally clause always runs,"**Answer**  
-To handle an exception and guarantee cleanup you use a `try` block with optional `except` clauses and a `finally` clause that runs regardless of whether an exception was raised or not [2]. The `finally` block is executed after the `try` and any matching `except` blocks, and if an exception was not handled it is re‑raised after `finally` completes [2].
+To handle an exception with `try`, `except`, and `finally`, wrap the code that may raise an error in a `try` block, provide one or more `except` clauses to catch specific exceptions, and optionally add a `finally` clause that runs regardless of whether an exception occurred. The `finally` block is useful for cleanup actions such as closing files or releasing resources. If an exception is not caught by any `except` clause, it is re‑raised after the `finally` block has executed [2].
 
 **Key points**  
-1. The `try … except` structure catches specified exceptions and can re‑raise them if desired [1].  
-2. An optional `else` clause runs only when no exception occurs in the `try` block [1].  
-3. The `finally` clause always runs, even if an exception is raised or re‑raised, and it is the place for cleanup actions such as closing files or releasing resources [2].  
-4. If the `finally` block itself raises an exception or contains a `return`, `break`, or `continue`, the original exception is not re‑raised, which is discouraged [2].",False,,0.6761,True,True,"1,2",,docs.python.org/3/tutorial/errors.html | docs.python.org/3/tutorial/errors.html,24.1,0.73,0.0,True,,,,
+1. The `try` block contains the code that might raise an exception [1].  
+2. Each `except` clause specifies an exception type to catch; if the exception matches, the clause runs and execution continues after the block [1, 3].  
+3. The `finally` clause runs whether or not an exception was raised, and if it contains a `break`, `continue`, or `return`, the exception is not re‑raised (though this is discouraged) [2].  
+4. If no `except` clause handles the exception, it is re‑raised after the `finally` block, potentially terminating the program if unhandled [2].",False,,0.6761,True,True,"1,2,3",,docs.python.org/3/tutorial/errors.html | docs.python.org/3/tutorial/errors.html | docs.python.org/3/tutorial/errors.html,40.8,0.8,0,True,,,,
 q06,direct,True,How do I create and activate a virtual environment?,Create it with python -m venv followed by a directory name ; Run the activate script of that environment (the command differs on Windows and Unix),"**Answer**  
-To create a virtual environment you run the `venv` module, e.g. `python -m venv <env_dir>` [2].  
-After creation you activate it by sourcing the appropriate script for your shell: on Unix/macOS use `source <env_dir>/bin/activate` (or the fish/csh variants) and on Windows use `<env_dir>\Scripts\activate.bat` or PowerShell’s `Activate.ps1` [1][3].
+To create a virtual environment you run the `venv` module with the target directory, e.g. `python -m venv .venv` [1][2].  
+After creation you activate it by sourcing the appropriate script for your shell: `source .venv/bin/activate` on Unix/MacOS or `.\.venv\Scripts\activate` on Windows [1][3].
 
 **Key points**  
-1. Use `python -m venv <path>` to create the environment [2].  
-2. Activate with `source <env>/bin/activate` on POSIX shells or `<env>\Scripts\activate.bat` on Windows cmd [1][3].  
-3. Activation prepends the environment’s `bin`/`Scripts` directory to your PATH so that `python` runs the environment’s interpreter [4].",False,,0.6334,True,True,"1,2,3,4",,docs.python.org/3/tutorial/venv.html | docs.python.org/3/library/venv.html | docs.python.org/3/library/venv.html | docs.python.org/3/library/venv.html,35.1,0.83,0.0,False,,,,
+1. Use `python -m venv <env_dir>` to create the environment [2].  
+2. Activate with `source <env_dir>/bin/activate` (bash/zsh) or `.\<env_dir>\Scripts\activate` (cmd) [1][3].  
+3. Activation prepends the environment’s `bin`/`Scripts` to your PATH so `python` runs the env’s interpreter [4].",False,,0.6334,True,True,"1,2,3,4",,docs.python.org/3/tutorial/venv.html | docs.python.org/3/library/venv.html | docs.python.org/3/library/venv.html | docs.python.org/3/library/venv.html,40.5,0.79,0,False,,,,
 q07,concept,True,What is a traceback and how do I read it?,A traceback shows the call stack where the error happened ; The last line contains the exception type and message,"**Answer**  
-A traceback is the stack trace that Python prints when an exception is raised. It shows the sequence of function calls that led to the error, with each line giving the file name, line number, and the code that was executing. Reading it involves looking at the bottom of the traceback for the original error message, then following the lines upward to see where the error was triggered and how the program got there.
+A traceback is the stack trace that Python prints when an exception occurs. It shows the sequence of function calls that led to the error, with each line indicating the file, line number, and code that was executing at that point [1]. Reading it involves looking at the bottom of the traceback for the original error message and then following the lines upward to see how the program reached that point [1].
 
 **Key points**  
-1. The traceback lists source lines in the order the calls were made, ending with the line that caused the exception.  
-2. Each entry shows the file, line number, and the code snippet, helping you locate the problematic code.  
-3. The error message (e.g., `IndexError: list index out of range`) appears at the bottom, after the stack trace.",False,,0.6762,True,False,,,,23.0,0.75,,True,,,,
+1. The traceback lists source lines in the order the calls were made, ending with the exception type and message [1].  
+2. Each line shows the file name, line number, and the exact code that raised the exception [1].  
+3. The traceback is stored in the exception’s `__traceback__` attribute and can be printed with `traceback.print_exc()` or formatted with `traceback.format_exc()` [5].  
+4. For more control, `traceback.TracebackException` objects can be created from an exception to capture and format the traceback without holding references to the original frames [4].",False,,0.6762,True,True,"1,4,5",,docs.python.org/3/tutorial/errors.html | docs.python.org/3/library/traceback.html | docs.python.org/3/library/traceback.html,49.6,0.62,0,True,,,,
 q08,concept,True,"Why does a function with a default argument like def f(x, items=[]) keep old values between calls?","The default value is evaluated only once, when the function is defined ; A mutable default such as a list is therefore shared between calls","**Answer**  
-In Python, default argument values are evaluated only once—when the function is defined, not each time it is called. If the default is a mutable object (e.g., a list or dict), subsequent calls see the same object, so modifications persist between calls. To avoid this, use `None` as the default and create a new mutable object inside the function when needed.  
+A default argument that is a mutable object (e.g., a list or dictionary) is created only once when the function is defined, not each time the function is called. Therefore, if the object is modified inside the function, those changes persist and are seen on subsequent calls, which is why `def f(x, items=[])` keeps old values between calls [1][2].
 
 **Key points**  
-1. Default values are created at function definition time.  
-2. Mutable defaults are shared across calls, leading to accumulated state.  
-3. Use `None` and instantiate a new object inside the function to get a fresh default each call.",False,,0.7287,True,False,,,,25.4,0.68,,False,,,,
+1. Default values are evaluated once at function definition time, so the same object is reused on every call [1][5].  
+2. Mutable objects (lists, dicts, etc.) can be altered, causing the shared state to accumulate values across calls [2][4].  
+3. To avoid this, use `None` as the default and create a new mutable object inside the function when needed [2][4].",False,,0.7287,True,True,"1,2,4,5",,docs.python.org/3/faq/programming.html | docs.python.org/3/tutorial/controlflow.html | docs.python.org/3/faq/programming.html | docs.python.org/3/tutorial/controlflow.html,56.2,2.74,0,False,,,,
 q09,concept,True,How does Python decide where to look for a module when I use import?,It searches the directories listed in sys.path ; sys.path includes the script directory and installed package locations,"**Answer**  
-When you write `import foo`, Python follows a defined search order: it first checks built‑in modules, then frozen modules, and finally the directories listed in `sys.path`. Each entry in `sys.path` is examined by the default finder that looks for a file or package named `foo` in that location. If a matching module is found, a loader creates the module object and executes it; otherwise a `ModuleNotFoundError` is raised. The search path can be extended or overridden by custom finders and loaders, and relative imports are resolved based on the current module’s package name.  
+Python decides where to look for a module by using its import machinery, which searches for the module and, if found, creates a module object [1]. The search is performed by a series of finders and loaders that examine the import path—a list of file system paths, zip files, or other locatable resources such as URLs [3]. If the module cannot be found, a `ModuleNotFoundError` is raised [1].
 
 **Key points**  
-1. Built‑in modules are found first, then frozen modules, then the `sys.path` entries.  
-2. Each `sys.path` entry is searched by the default finder for a matching file or package.  
-3. Custom finders/loaders can modify or extend this search behavior.  
-4. Relative imports use the current module’s package name; the main module must use absolute imports.",False,,0.7882,False,False,,,,23.5,0.99,,True,,,,
+1. The import system may bypass `__import__()` and use its own mechanisms to implement import semantics [1].  
+2. Default finders include one for built‑in modules, one for frozen modules, and a third that searches the import path for modules [3].  
+3. The import path can be extended to include additional locations or custom finders, allowing the search to cover URLs or other resources [3].  
+4. If no finder can locate the module, the import machinery raises `ModuleNotFoundError` [1].",False,,0.7882,False,True,"1,3",,docs.python.org/3/reference/import.html | docs.python.org/3/reference/import.html,59.8,0.6,0,True,,,,
 q10,concept,True,How do iterators and generators work in Python?,An iterator produces values one at a time with __next__ ; A generator function uses yield and keeps its state between values,"**Answer**  
-Iterators in Python are objects that implement the `__iter__()` and `__next__()` methods, allowing a `for` loop or the `next()` function to retrieve elements one at a time until a `StopIteration` exception is raised [5]. Generators are a concise way to create iterators: they are defined like normal functions but use the `yield` statement to produce a value and pause execution, automatically preserving local state and creating the required `__iter__()` and `__next__()` methods for you [1, 2]. When a generator function is called, it returns a generator object that can be iterated over; each call to `next()` resumes the function from the last `yield` until the function exits, at which point `StopIteration` is raised automatically [2].  
+Iterators in Python are objects that implement the `__iter__()` and `__next__()` methods, allowing them to be used in loops and comprehensions; when `__next__()` runs out of items it raises `StopIteration` to signal completion [5]. Generators are a concise way to create iterators: they are defined like normal functions but use the `yield` statement to produce a sequence of values, automatically handling the creation of `__iter__()` and `__next__()` and preserving local state between calls [1, 2]. When a generator function finishes, it automatically raises `StopIteration`, just like a class‑based iterator would [2].  
 
 **Key points**  
-1. An iterator must define `__iter__()` and `__next__()`; `__next__()` raises `StopIteration` when finished [5].  
-2. A generator function uses `yield` to produce values and automatically implements the iterator protocol, saving local variables between calls [1, 2].  
-3. Generators simplify iterator creation compared to class-based iterators, as they avoid manual state management and method definitions [1, 2].",False,,0.7533,True,True,"1,2,5",,docs.python.org/3/tutorial/classes.html | docs.python.org/3/tutorial/classes.html | docs.python.org/3/tutorial/classes.html,38.3,1.95,0.0,True,,,,
+1. An iterator must provide `__iter__()` and `__next__()`; `__next__()` raises `StopIteration` when done [5].  
+2. A generator function uses `yield` to produce values and automatically implements the iterator protocol, saving local variables and execution state between yields [1, 2].  
+3. Generators are essentially resumable functions that return a stream of values rather than a single result [3, 4].",False,,0.7533,True,True,"1,2,3,4,5",,docs.python.org/3/tutorial/classes.html | docs.python.org/3/tutorial/classes.html | docs.python.org/3/howto/functional.html | docs.python.org/3/howto/functional.html | docs.python.org/3/tutorial/classes.html,34.4,0.75,0,True,,,,
 q11,error,True,What does UnboundLocalError mean and why do I get it when the variable has a value?,Assigning to a variable inside a function makes it local to that function ; Use global or nonlocal if you want to change an outer variable,"**Answer**  
-An `UnboundLocalError` occurs when a function tries to use a variable that it considers local, but that local variable has not yet been assigned a value. In Python, any assignment to a name inside a function makes that name local to the function, even if the same name exists in an outer scope. If you reference the name before the assignment, Python raises `UnboundLocalError` because it expects a local value that doesn’t exist yet.  
+An `UnboundLocalError` is raised when a function refers to a local variable that has not yet been assigned a value in that function’s scope. This happens because any assignment to a variable inside a function makes that variable local, shadowing any variable of the same name in an outer scope, so a preceding reference to it fails [1][3].
 
 **Key points**  
-1. Assignment inside a function makes the variable local, shadowing outer‑scope names.  
-2. Referencing that local variable before it is assigned triggers `UnboundLocalError`.  
-3. Use `global` (for module‑level variables) or `nonlocal` (for enclosing function variables) to modify the outer variable instead of creating a new local one.  
-4. The error is a subclass of `NameError` and indicates a reference to an unbound local variable.",False,,0.7095,True,False,,,,31.5,0.96,,False,,,,
+1. Assignment inside a function creates a local variable that hides the outer one.  
+2. Referencing that local variable before it is assigned triggers the error.  
+3. Declaring the variable as `global` or `nonlocal` allows the function to use the outer‑scope variable instead. [2][4]",False,,0.7095,True,True,"1,2,3,4",,docs.python.org/3/faq/programming.html | docs.python.org/3/faq/programming.html | docs.python.org/3/library/exceptions.html | docs.python.org/3/faq/programming.html,64.3,0.82,0,False,,,,
 q12,direct,True,How do I read and write JSON in Python?,json.dumps / json.dump turn Python objects into JSON ; json.loads / json.load turn JSON into Python objects,"**Answer**  
-Python’s built‑in `json` module lets you read JSON from a file or string with `json.load()` / `json.loads()` and write JSON with `json.dump()` / `json.dumps()`. The module follows RFC 7159 and ECMA‑404, so it handles standard JSON objects, arrays, strings, numbers, `true/false/null`, and nested structures.  
+To read JSON from a file or string in Python, use `json.load()` for file‑like objects or `json.loads()` for strings, which deserialize the JSON into native Python objects such as dictionaries and lists [2].  
+To write JSON to a file or string, use `json.dump()` to serialize a Python object to a file‑like object or `json.dumps()` to get a JSON string; you can control formatting with parameters like `indent`, `sort_keys`, or `ensure_ascii` [1].  
 
 **Key points**  
-1. **Reading** – `obj = json.load(file_obj)` reads from a file‑like object; `obj = json.loads(string)` parses a JSON string.  
-2. **Writing** – `json.dump(obj, file_obj, indent=4, sort_keys=True)` writes to a file with pretty‑printing; `json.dumps(obj, indent=4)` returns a string.  
-3. **Safety** – When loading data from untrusted sources, limit the size of the input to avoid excessive CPU/memory use (see the warning in the documentation).  
-4. **Command‑line** – `python -m json infile.json outfile.json` can be used to validate or pretty‑print JSON from the command line, with options like `--sort-keys` and `--indent` for formatting.",False,,0.7043,True,False,,,,23.0,0.85,,False,,,,
+1. `json.load(fp)` reads from a file‑like object `fp` and returns a Python object [2].  
+2. `json.loads(s)` reads from a JSON string `s` and returns a Python object [2].  
+3. `json.dump(obj, fp, indent=4, sort_keys=True)` writes a Python object `obj` to a file‑like object `fp` with pretty‑printing and key sorting [1].  
+4. `json.dumps(obj, indent=4, sort_keys=True)` returns a JSON string representation of `obj` with similar formatting options [1].  
+5. Use `json.tool` (`python -m json`) for quick command‑line validation and pretty‑printing of JSON files or streams [1, 3].",False,,0.7043,True,True,"1,2,3",,docs.python.org/3/library/json.html | docs.python.org/3/library/json.html | docs.python.org/3/library/json.html,37.3,0.88,0,False,,,,
 q13,error,True,Why do I get FileNotFoundError when opening a file?,FileNotFoundError is raised when a file or directory is requested but does not exist ; Check the file path and the current working directory,"**Answer**  
-A `FileNotFoundError` is raised when the path you pass to `open()` does not point to an existing file or directory. This happens if the file name is misspelled, the path is relative to the wrong working directory, or the file simply hasn’t been created yet.  
+A `FileNotFoundError` is raised when the file or directory you request does not exist on the filesystem. This exception corresponds to the OS error `ENOENT` and is part of the built‑in exception hierarchy [1, 5].
 
 **Key points**  
-1. Verify the exact path and spelling of the file.  
-2. Check the current working directory (`os.getcwd()`) to ensure the relative path is correct.  
-3. If the file should be created, use a mode that allows creation, such as `'w'` or `'a'`, or create the file beforehand.  
-
-These steps address the most common causes of a `FileNotFoundError` as described in the documentation.",False,,0.6229,True,False,,,,16.1,0.52,,True,,,,
+1. Verify that the path you pass to `open()` is correct and that the file actually exists at that location.  
+2. If you are using a relative path, ensure it is relative to the current working directory of the process.  
+3. Check file permissions; lack of read permission can also lead to a `FileNotFoundError` in some contexts.  
+4. If the file is supposed to be created, use a mode that allows creation, such as `'w'` or `'a'`, instead of `'r'`.",False,,0.6229,True,True,"1,5",,docs.python.org/3/library/exceptions.html | docs.python.org/3/library/exceptions.html,77.3,0.83,0,True,,,,
 q14,traceback,True,"Traceback (most recent call last):
   File ""main.py"", line 4, in <module>
     print(prices['apple'])
-KeyError: 'apple'",KeyError is raised when a mapping (dictionary) key is not found ; Check that the key exists in the dictionary,The indexed documentation does not seem to contain a reliable answer to this question.,True,low_retrieval_score,0.35,True,,,,,0.0,0.0,,False,,,,
+KeyError: 'apple'",KeyError is raised when a mapping (dictionary) key is not found ; Check that the key exists in the dictionary,The indexed documentation does not seem to contain a reliable answer to this question.,True,low_retrieval_score,0.35,True,,,,,33.1,0.0,0,False,,,,
 q15,concept,True,What is the difference between a list and a tuple?,Lists are mutable ; Tuples are immutable sequences,"**Answer**  
-A list is a mutable sequence that can be changed after creation, while a tuple is an immutable sequence that cannot be altered once it is created. Both support indexing and slicing, but only lists allow item assignment, extension, and other mutating operations.  
+A list is a mutable sequence that can be modified after creation, while a tuple is an immutable sequence that cannot be changed once it is created. Both support indexing and slicing, but only lists allow item assignment, deletion, and methods such as `append` or `extend` [1, 3].  
 
 **Key points**  
-1. Lists are created with `list(seq)` and tuples with `tuple(seq)`; converting an existing list to a tuple does not copy the object, whereas converting a list to a list does create a copy [1].  
-2. Because tuples are immutable, attempts to modify an element (e.g., `a_tuple[0] += 1`) raise a `TypeError` – the assignment part of the operation fails [2], [5].  
-3. Lists support in‑place operations like `+=` that mutate the list itself, whereas tuples do not allow such in‑place modifications [4].",False,,0.7125,True,True,"1,2,4,5",,docs.python.org/3/faq/programming.html | docs.python.org/3/faq/programming.html | docs.python.org/3/faq/programming.html | docs.python.org/3/faq/programming.html,23.5,0.82,,True,,,,
+1. Lists are created with square brackets `[]` and can be altered in place; tuples use parentheses `()` and are fixed after creation [1].  
+2. Converting between them is straightforward: `tuple(list_obj)` produces a tuple, and `list(tuple_obj)` produces a list, with copies made unless the source is already the target type [1].  
+3. Attempting to modify a tuple element (e.g., `a_tuple[0] += 1`) raises a `TypeError` because tuples are immutable, whereas the same operation on a list succeeds [2].",False,,0.7125,True,True,"1,2,3",,docs.python.org/3/faq/programming.html | docs.python.org/3/faq/programming.html | docs.python.org/3/tutorial/datastructures.html,40.1,0.6,0,True,,,,
 q16,concept,True,"What is the difference between fit, transform and fit_transform?",fit learns parameters from the training data ; transform applies the learned parameters to data ; fit_transform does both steps on the same data,"**Answer**  
-In scikit‑learn a transformer can be used in three ways:
+In scikit‑learn, `fit` learns the parameters of a transformer from the data, `transform` applies those learned parameters to data, and `fit_transform` does both steps in one call, returning the transformed data. The method `fit_transform` is often more efficient than calling `fit` and then `transform` separately, and for some transformers (e.g., transductive ones) it may be the only available method. However, using `fit_transform` on the entire dataset (training + test) can cause data leakage, especially in inductive learning scenarios [2].  
 
-1. **`fit(X, y=None)`** – learns the parameters from the data (e.g. means for a scaler).  
-2. **`transform(X)`** – applies the learned parameters to new data and returns the transformed array.  
-3. **`fit_transform(X, y=None)`** – does both steps in one call and returns the transformed data. It is often implemented for efficiency and, in some transformers, to avoid data leakage (e.g. `TargetEncoder` uses cross‑fitting) [1][3].
-
-**Key points**
-
-1. `fit_transform` is equivalent to `fit(...).transform(...)` for most transformers, but some (like `TargetEncoder`) perform additional steps to prevent leakage [3].  
-2. Using `fit_transform` on the entire dataset (train + test) can leak information; instead, fit on training data only and transform test data separately [2].  
-3. `fit_transform` may be more efficient because it can combine operations internally and avoid repeated passes over the data [2].",False,,0.7105,True,True,"1,2,3",,scikit-learn.org/stable/glossary.html | scikit-learn.org/stable/glossary.html | scikit-learn.org/stable/modules/preprocessing.html,23.1,0.78,,False,,,,
+**Key points**  
+1. `fit(X, y=None)` learns the model from `X` (and optionally `y`) [1].  
+2. `transform(X)` applies the learned model to `X`, producing transformed data [1].  
+3. `fit_transform(X, y=None)` fits the model and immediately returns the transformed data, potentially using a more efficient combined implementation [1].  
+4. For transformers that rely on cross‑fitting (e.g., `TargetEncoder`), `fit_transform` and `fit(...).transform(...)` may produce different results to avoid target leakage [3].  
+5. Avoid applying `fit_transform` to both training and test data together to prevent data leakage in inductive learning [2].",False,,0.7105,True,True,"1,2,3",,scikit-learn.org/stable/glossary.html | scikit-learn.org/stable/glossary.html | scikit-learn.org/stable/modules/preprocessing.html,52.6,0.79,0,False,,,,
 q17,multi,True,How do I avoid data leakage when scaling features before cross-validation?,Fit the scaler only on the training part of each split ; Put the scaler and the model in a Pipeline so preprocessing happens inside cross-validation,"**Answer**  
-To avoid data leakage when scaling features before cross‑validation, perform the scaling inside a scikit‑learn `Pipeline` and let the cross‑validation split handle the fitting. Fit the scaler only on the training folds and apply the same transformation to the validation folds. This ensures that statistics (mean, variance, etc.) are computed without seeing the test data.
+To avoid data leakage when scaling features before cross‑validation, perform the scaling inside a scikit‑learn `Pipeline` and let the pipeline be used by the cross‑validation routine. This ensures that the scaler is fitted only on the training folds and then applied to the corresponding test fold, preventing the test data from influencing the scaling parameters [1][2].
 
 **Key points**  
-1. **Use a pipeline** – it guarantees that `fit` is called only on the training subset and `transform` on the test subset during cross‑validation. [1][2]  
-2. **Fit‑transform on training, transform on test** – do not call `fit` on the entire dataset before splitting. [2]  
-3. **Keep test data separate** – never include test data when computing scaling parameters. [3]  
-4. **Choose a robust scaler if outliers are present** – `RobustScaler` can be used as a drop‑in replacement for `StandardScaler`. [4]  
-
-By following these steps, you prevent the model from learning from information that would not be available at prediction time, thereby avoiding overly optimistic performance estimates.",False,,0.5558,True,True,"1,2,3,4",,scikit-learn.org/stable/common_pitfalls.html | scikit-learn.org/stable/common_pitfalls.html | scikit-learn.org/stable/common_pitfalls.html | scikit-learn.org/stable/modules/preprocessing.html,19.7,0.79,,True,,,,
+1. Split the data into train and test subsets before any preprocessing, and never call `fit` on the test data [2].  
+2. Use a `Pipeline` that includes the scaler (e.g., `StandardScaler` or `RobustScaler`) and the estimator; the pipeline will automatically fit the scaler on each training fold during cross‑validation [1][2].  
+3. After fitting, use the pipeline’s `transform` (or `predict`) on the test data to maintain consistency across folds [2].  
+4. Choosing a robust scaler such as `RobustScaler` can mitigate the impact of outliers on the scaling step [4].",False,,0.5558,True,True,"1,2,4",,scikit-learn.org/stable/common_pitfalls.html | scikit-learn.org/stable/common_pitfalls.html | scikit-learn.org/stable/modules/preprocessing.html,52.4,0.67,0,True,,,,
 q18,concept,True,What is data leakage in machine learning?,Information from outside the training data (for example the test set) is used while building the model ; It leads to overly optimistic results that do not hold on new data,"**Answer**  
-Data leakage occurs when information from the test set or future data leaks into the training process, causing overly optimistic performance estimates. In scikit‑learn this can happen if preprocessing (e.g., scaling, feature selection) is fit on the full dataset before splitting, or if the test data is used during fitting. The pipeline and proper train‑test split prevent this by ensuring that `fit`/`fit_transform` are applied only to the training subset and `transform` is applied to the test subset [5].
+Data leakage occurs when information from the test set or future data is inadvertently used during training or preprocessing, causing an overly optimistic estimate of model performance. In scikit‑learn, this can happen if steps such as feature selection, scaling, or imputation are fit on the entire dataset before splitting, or if the same data is used for both training and evaluation [1][5].  
 
 **Key points**  
-1. Split data into train/test before any preprocessing.  
-2. Use `fit`/`fit_transform` only on training data; use `transform` on test data.  
-3. Pipelines automate this separation and help avoid leakage.",False,,0.6849,True,True,5,,scikit-learn.org/stable/common_pitfalls.html,19.2,1.03,,True,,,,
-q19,concept,True,Why do I get different results every time I run my model?,Many estimators and splitters use randomness ; Set random_state to an integer to make results reproducible,The indexed documentation does not seem to contain a reliable answer to this question.,True,low_retrieval_score,0.3986,True,,,,,16.1,0.0,,False,,,,
+1. Data leakage is a methodological mistake that leads to inflated performance metrics. [1]  
+2. It can arise during preprocessing steps like feature selection, scaling, or imputation if they are applied to the full dataset before the train/test split. [5]  
+3. The correct practice is to split the data first, then fit any preprocessing or feature selection only on the training subset, and transform the test subset separately. [2][3]",False,,0.6849,True,True,"1,2,3,5",,scikit-learn.org/stable/common_pitfalls.html | scikit-learn.org/stable/common_pitfalls.html | scikit-learn.org/stable/common_pitfalls.html | scikit-learn.org/stable/common_pitfalls.html,41.5,1.33,0,True,,,,
+q19,concept,True,Why do I get different results every time I run my model?,Many estimators and splitters use randomness ; Set random_state to an integer to make results reproducible,The indexed documentation does not seem to contain a reliable answer to this question.,True,low_retrieval_score,0.3986,True,,,,,39.6,0.0,0,False,,,,
 q20,api,True,How does cross_val_score work?,"It splits the data, fits the estimator and returns one score per fold ; The cv parameter controls the splitting strategy","**Answer**  
-`cross_val_score` splits the data into a number of folds, trains the estimator on each training fold, evaluates it on the corresponding test fold, and returns an array of the scores for each fold. The mean and standard deviation of these scores give an estimate of the model’s generalisation performance.  
+`cross_val_score` evaluates an estimator by splitting the data into a number of folds, fitting the estimator on each training split, and computing a score on the corresponding test split. The function returns an array of the scores for each fold, which can then be averaged or otherwise aggregated to estimate generalization performance [1][2].  
 
 **Key points**  
-1. It requires an estimator that implements `fit` and optionally `predict`.  
-2. The `cv` parameter controls the number of folds or the cross‑validation strategy.  
-3. The `scoring` parameter selects the metric used to evaluate each fold.  
-4. The returned array contains one score per fold; you can compute `scores.mean()` and `scores.std()` to summarise performance.  
-5. If you need predictions for every sample, use `cross_val_predict` instead, but it does not provide a generalisation error estimate.",False,,0.6729,True,False,,,,19.2,1.0,,True,,,,
+1. It requires an estimator that implements `fit` and optionally `predict` or `score` [4].  
+2. The data `X` and target `y` are split according to the `cv` parameter, which can be an integer, a cross‑validation splitter, or a custom strategy [4].  
+3. The `scoring` argument specifies the metric to use; if `None`, the estimator’s default `score` method is used [4].  
+4. The returned array contains one score per fold, allowing calculation of mean and standard deviation to assess model stability [2].  
+5. Grouped cross‑validation can be performed by passing `groups` when using a group‑aware splitter such as `GroupKFold` [5].",False,,0.6729,True,True,"1,2,4,5",,scikit-learn.org/stable/modules/generated/sklearn.model_selection.cross_val_score.html | scikit-learn.org/stable/modules/cross_validation.html | scikit-learn.org/stable/modules/generated/sklearn.model_selection.cross_val_score.html | scikit-learn.org/stable/modules/generated/sklearn.model_selection.cross_val_score.html,37.2,1.06,0,True,,,,
 q21,concept,True,How do I do stratified cross-validation for imbalanced classes?,StratifiedKFold keeps the class proportions in every fold,"**Answer**  
-Use scikit‑learn’s stratified splitters such as `StratifiedKFold` or `StratifiedShuffleSplit`. They preserve the class distribution in each fold, which is essential when classes are imbalanced.  
+Use scikit‑learn’s stratified splitters such as `StratifiedKFold` or `StratifiedShuffleSplit` to keep the class proportions similar in each fold, which is especially useful for imbalanced data [1, 5].  
 
 **Key points**  
-1. `StratifiedKFold` creates folds that contain approximately the same percentage of each target class as the whole dataset.  
-2. `StratifiedShuffleSplit` does the same but with random shuffling, useful when you want multiple random splits.  
-3. These splitters help avoid folds that miss rare classes, which can otherwise cause undefined metrics or training failures.  
-4. Be aware that stratification can reduce the apparent variability of performance metrics across folds, as it makes folds more homogeneous.",False,,0.6713,True,False,,,,23.3,0.68,,False,,,,
+1. `StratifiedKFold` returns folds that preserve the percentage of each target class, helping to avoid folds that miss rare classes [1].  
+2. `StratifiedShuffleSplit` does the same but with random shuffling, useful when you want multiple random stratified splits [5].  
+3. Stratification can reduce variability in performance metrics across folds but may also hide some uncertainty inherent to limited data [3].  
+4. If groups are involved, consider `StratifiedGroupKFold`, though it may produce imbalanced splits if group class distributions vary widely [2].",False,,0.6713,True,True,"1,2,3,5",,scikit-learn.org/stable/modules/cross_validation.html | scikit-learn.org/stable/modules/cross_validation.html | scikit-learn.org/stable/modules/cross_validation.html | scikit-learn.org/stable/modules/cross_validation.html,47.0,1.6,0,False,,,,
 q22,concept,True,Which cross-validation splitter should I use for time series data?,TimeSeriesSplit keeps the time order so the model is never tested on the past,"**Answer**  
-For time‑series data you should use `TimeSeriesSplit` from `sklearn.model_selection`. It respects the temporal order by always training on past observations and testing on future ones, avoiding leakage that would occur with standard KFold or ShuffleSplit.  
+For time‑series data you should use `TimeSeriesSplit`, which is a cross‑validation iterator that respects the temporal order of the samples and only tests on future observations [1][2].
 
 **Key points**  
-1. `TimeSeriesSplit` returns successive training sets that are supersets of previous ones, ensuring each test set contains only future data [1].  
-2. It is designed for data observed at fixed time intervals and keeps folds of equal duration for comparable metrics [1].  
-3. Classical cross‑validators assume i.i.d. data and would mix past and future samples, leading to unrealistic error estimates for time series [2].",False,,0.7041,True,True,"1,2",,scikit-learn.org/stable/modules/cross_validation.html | scikit-learn.org/stable/modules/cross_validation.html,22.4,0.57,,True,,,,
+1. `TimeSeriesSplit` returns successive training sets that are supersets of previous ones, ensuring that each test set contains data that comes after the training data [1].  
+2. It avoids the autocorrelation problem that arises with i.i.d. splitters like `KFold` or `ShuffleSplit`, which assume independent samples [2].  
+3. The splits are constructed so that each fold covers the same duration, allowing comparable performance metrics across folds [1].",False,,0.7041,True,True,"1,2",,scikit-learn.org/stable/modules/cross_validation.html | scikit-learn.org/stable/modules/cross_validation.html,49.9,1.14,0,True,,,,
 q23,api,True,How do I tune hyperparameters with GridSearchCV?,Pass an estimator and a param_grid ; It tries every combination with cross-validation and keeps the best,"**Answer**  
-To tune hyper‑parameters with `GridSearchCV` you create a parameter grid that maps estimator names to the hyper‑parameters you want to search, instantiate `GridSearchCV` with the estimator and the grid, and fit it to your data. The grid search will perform cross‑validation for each combination and return the best model.
+To tune hyperparameters with `GridSearchCV` you create a parameter grid that maps estimator names to the hyperparameters you want to search over, instantiate `GridSearchCV` with the estimator and the grid, and fit it to your data. The fitted object will contain the best parameter combination and the corresponding best estimator. [1]  
 
-**Key points**
-
-1. **Define the estimator** (e.g., a `VotingClassifier` or any single estimator).  
-2. **Create a parameter grid** using the double‑underscore syntax for nested estimators (`'lr__C'`, `'rf__n_estimators'`).  
-3. **Instantiate `GridSearchCV`** with `estimator`, `param_grid`, and optionally `cv`, `scoring`, etc.  
-4. **Fit** the grid search to your data (`grid.fit(X, y)`).  
-5. The best hyper‑parameters are available via `grid.best_params_` and the best estimator via `grid.best_estimator_`.  
-
-These steps follow the usage example shown in the documentation passage [1].",False,,0.7357,True,True,1,,scikit-learn.org/stable/modules/ensemble.html,19.4,0.69,,False,,,,
+**Key points**  
+1. Define the estimator (e.g., a `VotingClassifier`) and the parameter grid using the double‑underscore syntax for nested estimators. [1]  
+2. Create a `GridSearchCV` instance with the estimator, `param_grid`, and a cross‑validation strategy (e.g., `cv=5`). [1]  
+3. Fit the grid search to your training data; it will perform exhaustive search over all combinations in the grid. [1]  
+4. After fitting, access the best parameters via `grid.best_params_` and the best estimator via `grid.best_estimator_`. [1]  
+5. For multi‑metric evaluation, you can pass a list or dict of scorers to `scoring` and set `refit` accordingly. [2]  
+6. Remember to evaluate the final model on a separate hold‑out set to avoid optimistic bias. [5]",False,,0.7357,True,True,"1,2,5",,scikit-learn.org/stable/modules/ensemble.html | scikit-learn.org/stable/modules/grid_search.html | scikit-learn.org/stable/modules/grid_search.html,49.3,0.85,0,False,,,,
 q24,concept,True,What is the difference between GridSearchCV and RandomizedSearchCV?,GridSearchCV tries all combinations ; RandomizedSearchCV samples a fixed number of parameter settings,"**Answer**  
-GridSearchCV exhaustively evaluates every combination in a user‑supplied grid, while RandomizedSearchCV samples a fixed number of combinations from a parameter space defined by distributions. The former guarantees that the best combination in the grid is found, but can be slow when the grid is large; the latter can explore a broader space more quickly and is less affected by irrelevant parameters.  
+GridSearchCV exhaustively evaluates every combination of the specified parameter grid, while RandomizedSearchCV samples a fixed number of parameter settings from a defined distribution, allowing a budget independent of the grid size and often faster convergence when many parameters are irrelevant [1, 5].
 
 **Key points**  
-1. GridSearchCV → exhaustive search over all grid values.  
-2. RandomizedSearchCV → random sampling from distributions, allowing a fixed budget independent of grid size.  
-3. Both support nested estimators via the `<estimator>__<parameter>` syntax.",False,,0.6155,True,False,,,,22.8,0.74,,False,,,,
+1. GridSearchCV considers all parameter combinations in the grid. [1]  
+2. RandomizedSearchCV draws a specified number of random samples from the parameter space. [1, 5]  
+3. Randomized search can be more efficient when the grid is large or contains irrelevant parameters. [5]  
+4. Both methods support searching over composite estimators using the `<estimator>__<parameter>` syntax. [2]",False,,0.6155,True,True,"1,2,5",,scikit-learn.org/stable/modules/grid_search.html | scikit-learn.org/stable/modules/grid_search.html | scikit-learn.org/stable/modules/grid_search.html,45.5,1.81,0,False,,,,
 q25,multi,True,How do I apply different preprocessing to numeric and categorical columns?,Use ColumnTransformer to apply different transformers to different columns,"**Answer**  
-Use a `ColumnTransformer` inside a `Pipeline`.  Specify a transformer for numeric columns (e.g., `StandardScaler` or `SimpleImputer`) and another for categorical columns (e.g., `OneHotEncoder`).  The `ColumnTransformer` will apply each transformer only to the columns you list, then concatenate the results.
+You can apply different preprocessing to numeric and categorical columns by using a `ColumnTransformer` inside a `Pipeline`. The transformer lets you specify a separate preprocessing step (e.g., `StandardScaler` for numeric features and `OneHotEncoder` for categorical features) for each column or column group [5].
 
-**Key points**
-
-1. Import the needed transformers:  
-   ```python
-   from sklearn.compose import ColumnTransformer
-   from sklearn.preprocessing import OneHotEncoder, StandardScaler
-   from sklearn.pipeline import Pipeline
-   ```
-
-2. Define the column lists:  
-   ```python
-   numeric_cols = ['age', 'income']
-   categorical_cols = ['gender', 'country']
-   ```
-
-3. Build the `ColumnTransformer`:  
-   ```python
-   preprocessor = ColumnTransformer(
-       transformers=[
-           ('num', StandardScaler(), numeric_cols),
-           ('cat', OneHotEncoder(handle_unknown='ignore'), categorical_cols)
-       ])
-   ```
-
-4. Embed it in a pipeline with your estimator:  
-   ```python
-   clf = Pipeline(steps=[('preprocess', preprocessor),
-                        ('model', LogisticRegression())])
-   ```
-
-5. Fit and predict as usual:  
-   ```python
-   clf.fit(X_train, y_train)
-   predictions = clf.predict(X_test)
-   ```
-
-This approach keeps preprocessing separate for each data type, prevents data leakage, and allows hyper‑parameter tuning of each step.",False,,0.5289,True,False,,,,22.4,0.83,,False,,,,
+**Key points**  
+1. Create a `ColumnTransformer` that maps column names or indices to the desired transformer.  
+2. Wrap the `ColumnTransformer` in a `Pipeline` so that the preprocessing is applied before the estimator, preventing data leakage.  
+3. The `ColumnTransformer` works with arrays, sparse matrices, and pandas DataFrames, allowing you to mix numeric and categorical processing in one step [5].",False,,0.5289,True,True,5,,scikit-learn.org/stable/modules/compose.html,53.0,0.8,0,False,,,,
 q26,direct,True,How do I fill in missing values in my features?,"Use SimpleImputer with a strategy such as mean, median or most_frequent","**Answer**  
-Use scikit‑learn’s `SimpleImputer` to replace missing values.  
-Choose a strategy such as `""mean""`, `""median""`, `""most_frequent""` or `""constant""` (with a `fill_value`).  
-After fitting, call `transform` (or `fit_transform`) to get the imputed array.  
-If you also want binary flags for missing entries, add a `MissingIndicator` (or `Indicator` in newer versions) to your pipeline.
+To fill in missing values in your features you can use scikit‑learn’s `SimpleImputer`. It replaces missing entries (e.g., `np.nan`) with a statistic such as the mean, median, or most frequent value of each column, or with a constant you specify [2]. After fitting the imputer on your training data, call `transform` (or `fit_transform`) to obtain the imputed dataset; the imputed values are stored in the `statistics_array` attribute and can be inspected if needed [1].
 
 **Key points**  
-1. `SimpleImputer` handles `np.nan` or a custom `missing_values` marker.  
-2. The imputed value is the chosen statistic per feature; with `strategy=""constant""` it uses `fill_value`.  
-3. `MissingIndicator` can generate a mask of missing positions, useful for feature engineering.",False,,0.6659,True,False,,,,18.5,0.73,,False,,,,
+1. `SimpleImputer` supports strategies like `""mean""`, `""median""`, `""most_frequent""`, or `""constant""` to replace missing values [2].  
+2. The imputer learns the statistics from the training data during `fit` and applies them during `transform` [1].  
+3. If you need binary indicators for missingness, combine `SimpleImputer` with `MissingIndicator` or set `add_indicator=True` in the imputer [3].  
+4. Ensure that your data is numeric and that missing values are encoded consistently (e.g., as `np.nan`) before fitting the imputer [5].",False,,0.6659,True,True,"1,2,3,5",,scikit-learn.org/stable/modules/generated/sklearn.impute.SimpleImputer.html | scikit-learn.org/stable/modules/impute.html | scikit-learn.org/stable/modules/impute.html | scikit-learn.org/stable/modules/impute.html,39.6,0.92,0,False,,,,
 q27,direct,True,How do I encode categorical features as numbers?,OneHotEncoder creates one binary column per category ; OrdinalEncoder maps categories to integers,"**Answer**  
-To turn categorical columns into numbers you can use scikit‑learn’s encoders.  
-- If you want a simple integer code for each category, use `OrdinalEncoder`.  
-- If you need a binary “one‑of‑K” representation, use `OneHotEncoder`.  
-
-Both accept arrays of strings or integers and return numeric arrays that can be fed into any estimator.
+To convert categorical features to numeric form you can use scikit‑learn’s encoders.  
+- `OrdinalEncoder` maps each category to an integer (0 to n_categories‑1) [1, 3].  
+- `OneHotEncoder` creates a binary column for each category, producing a one‑of‑K representation [1, 2, 5].  
 
 **Key points**  
-1. `OrdinalEncoder` maps each unique value to an integer 0 … n‑1 per feature.  
-2. `OneHotEncoder` creates a binary column for every category (sparse or dense output).  
-3. Tree‑based models can work well with the integer codes from `OrdinalEncoder`; most other estimators expect one‑hot encoding.  
-4. Strings are rejected by many estimators, so encoding is required before fitting.",False,,0.7007,True,False,,,,20.6,0.7,,True,,,,
+1. `OrdinalEncoder` is suitable when the model can handle integer‑coded categories, such as tree‑based estimators [1, 3].  
+2. `OneHotEncoder` is the default choice for most estimators that expect continuous numeric input and treats categories as nominal [1, 2, 5].  
+3. Both encoders accept arrays of integers or strings as input and return either sparse or dense numeric arrays depending on the `sparse_output` parameter [2].",False,,0.7007,True,True,"1,2,3,5",,scikit-learn.org/stable/glossary.html | scikit-learn.org/stable/modules/generated/sklearn.preprocessing.OneHotEncoder.html | scikit-learn.org/stable/modules/preprocessing.html | scikit-learn.org/stable/modules/preprocessing.html,43.8,0.68,0,True,,,,
 q28,concept,True,Which metrics should I use for an imbalanced classification problem?,"Accuracy can be misleading ; Use precision, recall, F1 score or balanced accuracy","**Answer**  
-For an imbalanced classification problem you should focus on metrics that give equal weight to each class rather than overall accuracy.  The balanced accuracy score is designed for this purpose and is equivalent to the macro‑average of recall per class [5].  Other useful metrics include the area under the ROC curve (AUC‑ROC) and the area under the precision‑recall curve (AUC‑PR), both of which are insensitive to class imbalance.  
+For an imbalanced classification problem you should use metrics that are robust to class imbalance, such as balanced accuracy, the area under the ROC curve (AUC‑ROC), or metrics derived from the confusion matrix that give equal weight to each class. These metrics avoid inflated performance estimates that can occur with plain accuracy on imbalanced data [5].
 
 **Key points**  
-1. **Balanced accuracy** – macro‑average of recall, treats each class equally [5].  
-2. **AUC‑ROC** – measures the trade‑off between true positive and false positive rates, independent of class prevalence.  
-3. **AUC‑PR** – especially informative when the positive class is rare, focusing on precision and recall.  
-4. Choose the metric that aligns with your decision‑making goal (e.g., minimizing false negatives vs. false positives).",False,,0.5929,True,True,5,,scikit-learn.org/stable/modules/model_evaluation.html,22.2,0.57,,True,,,,
+1. Balanced accuracy is the macro‑average of recall scores per class, weighting each sample by the inverse prevalence of its true class, and equals plain accuracy on balanced data [5].  
+2. In the binary case, balanced accuracy equals the arithmetic mean of sensitivity and specificity, or equivalently the AUC‑ROC with binary predictions [5].  
+3. Metrics such as the Brier score or log loss can also be used when probability estimates are important, but they do not inherently correct for imbalance; they should be combined with class‑balanced weighting if needed [4].",False,,0.5929,True,True,"4,5",,scikit-learn.org/stable/modules/model_evaluation.html | scikit-learn.org/stable/modules/model_evaluation.html,47.7,0.83,0,True,,,,
 q29,api,True,What does roc_auc mean and how do I compute it?,ROC AUC is the area under the receiver operating characteristic curve ; Use roc_auc_score or the roc_auc scoring string,"**Answer**  
-`roc_auc` is the Area Under the Receiver‑Operating Characteristic curve. It measures how well a classifier ranks positive samples higher than negative ones. In scikit‑learn you compute it with `metrics.roc_auc_score(y_true, y_score)` where `y_score` is the probability or decision function output for the positive class (or for each class in a multi‑class setting). For multi‑class problems you can average pairwise or one‑vs‑rest AUCs using the `average` parameter (`macro`, `weighted`, `micro`) or the `multiclass` keyword [1][5].
+The ROC‑AUC (Receiver Operating Characteristic – Area Under the Curve) is a metric that measures how well a classifier ranks positive samples higher than negative ones. It is computed by integrating the ROC curve, which plots the true positive rate against the false positive rate at various threshold settings. In scikit‑learn you can compute it with `metrics.roc_auc_score(y_true, y_score)` where `y_score` is the probability estimate for the positive class; for multi‑class problems you can use the `average` parameter (`'macro'`, `'weighted'`, `'micro'`, `'ovr'`, `'ovo'`) to aggregate pairwise or per‑class AUCs [1, 5].  
 
 **Key points**  
-1. `roc_auc_score` expects true labels and predicted scores (not hard labels).  
-2. For binary classification, pass the probability of the positive class.  
-3. For multi‑class, set `multiclass='ovr'` or `'ovo'` and choose an averaging strategy.  
-4. Optionally limit the curve with `max_fpr` if a high false‑positive rate is unacceptable.",False,,0.6146,True,True,"1,5",,scikit-learn.org/stable/modules/model_evaluation.html | scikit-learn.org/stable/modules/model_evaluation.html,21.7,0.81,,True,,,,
+1. ROC‑AUC quantifies ranking quality between positive and negative classes [1].  
+2. Use `metrics.roc_auc_score` with probability estimates (`predict_proba`) to compute it [1].  
+3. For multi‑class classification, specify an averaging strategy such as `'ovr'` or `'ovo'` to obtain a single score [1, 5].  
+4. The `max_fpr` parameter can limit the ROC curve to a specific false‑positive‑rate range if needed [5].",False,,0.6146,True,True,"1,5",,scikit-learn.org/stable/modules/model_evaluation.html | scikit-learn.org/stable/modules/model_evaluation.html,77.2,0.89,0,True,,,,
 q30,direct,True,How can I save a trained model and load it later?,Use joblib (or pickle) to dump and load the estimator ; Load it with the same scikit-learn version,"**Answer**  
-To save a trained scikit‑learn model you can persist it with a method such as `pickle`, `joblib`, `cloudpickle`, `skops.io`, or export it to ONNX. After persisting, you can load the model in another environment and use it to make predictions. The choice of method depends on your deployment needs and the environment in which you will serve the model [1][2][3].
+To save a trained scikit‑learn model you can persist it with a method such as `pickle`, `joblib`, `cloudpickle`, `skops.io`, or export it to ONNX. After persisting, you can load the model in another environment and use it to make predictions [1, 2, 3].
 
 **Key points**  
-1. Train the model (e.g., `clf.fit(X, y)`) and then persist it using your chosen method [1].  
-2. When loading, ensure the target environment has the same package versions and dependencies as the training environment; otherwise loading may fail [2].  
-3. ONNX provides a lightweight, language‑agnostic format that can run without Python, but may have compatibility issues with different frameworks [3].  
-4. `skops.io` offers a secure alternative to `pickle` by preventing arbitrary code execution unless explicitly allowed [5].  
-5. After loading, the model can be served via a web service or containerized deployment for handling prediction requests [4].",False,,0.5876,True,True,"1,2,3,4,5",,scikit-learn.org/stable/model_persistence.html | scikit-learn.org/stable/model_persistence.html | scikit-learn.org/stable/model_persistence.html | scikit-learn.org/stable/model_persistence.html | scikit-learn.org/stable/model_persistence.html,31.6,1.58,0.0,True,,,,
+1. Train the model first, e.g., `clf.fit(X, y)` [1].  
+2. Persist the trained model using your chosen method (e.g., `joblib.dump(clf, ""model.joblib"")` or `skops.io.dump(clf, ""model.skops"")`) [2].  
+3. Load the model later with the corresponding loader (`joblib.load`, `skops.io.load`, etc.) and call `predict` on new data [1].  
+4. Ensure the loading environment has the same package versions as the training environment; otherwise loading may fail [2].  
+5. If you export to ONNX, you need an ONNX runtime to load and run the model, which can be lighter than a full Python environment [3].",False,,0.5876,True,True,"1,2,3",,scikit-learn.org/stable/model_persistence.html | scikit-learn.org/stable/model_persistence.html | scikit-learn.org/stable/model_persistence.html,54.3,0.81,0,True,,,,
 q31,direct,True,How do I turn text documents into numeric features with TF-IDF?,CountVectorizer counts words ; TfidfVectorizer weights the counts by inverse document frequency,"**Answer**  
-To convert raw text documents into numeric TF‑IDF features in scikit‑learn, use `TfidfVectorizer`. It tokenises the text, builds a document‑term matrix, applies the TF‑IDF weighting (term‑frequency × inverse‑document‑frequency) and normalises the vectors by their Euclidean norm.  
+To convert text documents into numeric features with TF‑IDF in scikit‑learn, use the `TfidfVectorizer` (or `TfidfTransformer` after a count matrix). `TfidfVectorizer` tokenises the text, builds a document‑term matrix, and applies the TF‑IDF weighting where each term’s weight is the term frequency multiplied by the inverse document frequency, then normalised by the Euclidean norm [2].  
 
 **Key points**  
-1. `TfidfVectorizer` internally uses `TfidfTransformer` with default settings: `norm='l2', use_idf=True, smooth_idf=True, sublinear_tf=False` [2].  
-2. The IDF is computed as  
-   \[
-   \text{idf}(t)=\log\frac{1+n}{1+\text{df}(t)}+1
-   \]  
-   where *n* is the total number of documents and *df(t)* the number of documents containing term *t* [2].  
-3. The resulting TF‑IDF vectors are L2‑normalised:  
-   \[
-   v_{\text{norm}}=\frac{v}{\|v\|_2}
-   \]  
-   [2].  
-4. You can tune parameters (e.g., `max_df`, `min_df`, `ngram_range`, `smooth_idf`) via a pipeline and grid search for optimal performance [4].  
-
-**How to use it**  
-```python
-from sklearn.feature_extraction.text import TfidfVectorizer
-
-vectorizer = TfidfVectorizer()          # default TF‑IDF settings
-X_tfidf = vectorizer.fit_transform(documents)  # documents is a list of strings
-```
-
-The `X_tfidf` matrix can now be fed directly into any scikit‑learn classifier or clustering algorithm.",False,,0.6952,True,True,"2,4",,scikit-learn.org/stable/modules/feature_extraction.html | scikit-learn.org/stable/modules/feature_extraction.html,25.4,1.19,,False,,,,
+1. `TfidfVectorizer` automatically handles tokenisation, stop‑word removal, and n‑gram extraction before applying TF‑IDF weighting [1].  
+2. The IDF is computed as \(\log\frac{1+n}{1+\text{df}(t)}+1\) by default, with `smooth_idf=True` and `sublinear_tf=False` [2].  
+3. The resulting vectors are L2‑normalised, producing a sparse matrix suitable for most classifiers [2].  
+4. For fine‑tuning, you can pipeline `TfidfVectorizer` with a classifier and use grid search to optimise parameters such as `max_df`, `min_df`, `ngram_range`, and `smooth_idf` [4].",False,,0.6952,True,True,"1,2,4",,scikit-learn.org/stable/modules/feature_extraction.html | scikit-learn.org/stable/modules/feature_extraction.html | scikit-learn.org/stable/modules/feature_extraction.html,39.6,0.57,0,False,,,,
 q32,concept,True,How do I choose the number of clusters for KMeans?,KMeans needs the number of clusters in advance ; Compare options with inertia or the silhouette score,"**Answer**  
-Choosing the number of clusters for KMeans is typically done by evaluating a clustering quality metric for several candidate values of `n_clusters` and picking the one that optimises that metric. A common approach is to compute the silhouette coefficient for each candidate and select the value that maximises it [2].  
+Choosing the number of clusters for KMeans is typically done by evaluating a clustering quality metric such as the silhouette coefficient over a range of candidate values and selecting the one that maximises the score [2]. The silhouette analysis compares the mean intra‑cluster distance to the mean nearest‑cluster distance for each sample, providing a graphical aid to interpret and validate the chosen number of clusters [2].
 
 **Key points**  
-1. **Silhouette analysis** – run KMeans for a range of `n_clusters`, compute `metrics.silhouette_score(X, labels)` for each, and choose the `n_clusters` with the highest score [2].  
-2. **Inertia (within‑cluster sum‑of‑squares)** – you can also look at the inertia curve (elbow method) to find a point where adding more clusters yields diminishing returns, though inertia alone assumes convex, isotropic clusters [5].  
-3. **Practical tip** – start with a reasonable range (e.g., 2–10) and refine around the best value found.  
-
-These methods help balance cluster compactness against over‑splitting the data.",False,,0.6624,True,True,"2,5",,scikit-learn.org/stable/modules/clustering.html | scikit-learn.org/stable/modules/clustering.html,22.0,1.08,,False,,,,
+1. Run KMeans for a range of `n_clusters` values and compute the silhouette score for each [2].  
+2. Plot the silhouette scores versus `n_clusters` to visually identify the peak, which suggests the optimal number of clusters [2].  
+3. The silhouette coefficient is a standard method referenced in scikit‑learn documentation for selecting `n_clusters` in KMeans [2].",False,,0.6624,True,True,2,,scikit-learn.org/stable/modules/clustering.html,49.0,0.58,0,False,,,,
 q33,concept,True,How can I tell if my model is overfitting or underfitting?,Compare training and validation scores ; Learning curves and validation curves show bias and variance,"**Answer**  
-You can tell if a model is over‑fitting or under‑fitting by comparing its training and validation (or test) scores.  
-- **Under‑fitting**: both training and validation scores are low.  
-- **Over‑fitting**: training score is high while validation score is low.  
-- **Good fit**: both scores are high and close to each other.  
+You can determine whether a model is over‑fitting or under‑fitting by comparing its training and validation scores. If both scores are low, the model is under‑fitting; if the training score is high while the validation score is low, the model is over‑fitting; otherwise the model is performing well [2].
 
 **Key points**  
-1. Plot a validation curve or learning curve to see how scores change with a hyperparameter or training size.  
-2. If the training score stays high but the validation score drops as the model becomes more complex, the model is over‑fitting.  
-3. If both scores remain low regardless of complexity, the model is under‑fitting.  
-4. A low training score with a high validation score is usually not possible.  
-
-These guidelines come from the scikit‑learn documentation on validation curves [2].",False,,0.5079,True,True,2,,scikit-learn.org/stable/modules/learning_curve.html,23.0,1.12,,False,,,,
+1. Plot a validation curve to see how training and validation scores change with a hyperparameter [2].  
+2. A low training score and a low validation score indicate under‑fitting [2].  
+3. A high training score and a low validation score indicate over‑fitting [2].  
+4. If both scores are high, the model is likely well‑balanced [2].",False,,0.5079,True,True,2,,scikit-learn.org/stable/modules/learning_curve.html,75.9,0.91,0,False,,,,
 q34,concept,True,Which random forest parameters matter most?,n_estimators sets the number of trees ; max_features sets how many features each split considers,"**Answer**  
-The two parameters that most strongly influence a RandomForest’s performance are **`n_estimators`** (the number of trees) and **`max_features`** (the number of features considered at each split).  `n_estimators` controls the bias‑variance trade‑off and computation time, while `max_features` balances variance reduction against bias increase.  Other parameters such as `max_depth`, `min_samples_split`, and `max_samples` also matter, but their impact is usually secondary to the two above.
+The most influential parameters for a RandomForestClassifier are `n_estimators` and `max_features`. `n_estimators` controls the number of trees in the forest; increasing it generally improves performance until a point of diminishing returns [4]. `max_features` determines the size of the random feature subset considered at each split; a smaller value reduces variance but increases bias, while a larger value does the opposite, and common defaults are `max_features=""sqrt""` for classification and `max_features=None` for regression [4].  
 
-**Key points**
-
-1. **`n_estimators`** – more trees generally improve accuracy up to a point; beyond a critical number the gains plateau.  
-2. **`max_features`** – determines the size of the random feature subset at each split; lower values reduce variance but increase bias.  
-3. Default settings (`max_features=""sqrt""` for classification, `max_features=None` for regression) are often good starting points.  
-4. Tuning these two parameters via cross‑validation (e.g., `RandomizedSearchCV`) is a common practice to find the best trade‑off.",False,,0.6515,True,False,,,,17.5,1.49,,True,,,,
+**Key points**  
+1. `n_estimators` – more trees → better accuracy up to a critical number, but longer training time [4].  
+2. `max_features` – balances bias–variance trade‑off; default values differ for classification vs regression [4].  
+3. Other parameters (e.g., `max_depth`, `min_samples_split`) also affect model complexity but are secondary to the two above [1].",False,,0.6515,True,True,"1,4",,scikit-learn.org/stable/modules/generated/sklearn.ensemble.RandomForestClassifier.html | scikit-learn.org/stable/modules/ensemble.html,41.2,0.72,0,True,,,,
 q35,api,True,How does the regularization strength work in LogisticRegression?,C is the inverse of the regularization strength ; Smaller C means stronger regularization,"**Answer**  
-In scikit‑learn’s `LogisticRegression`, regularization is controlled by the inverse‑strength parameter `C`. A smaller `C` means stronger regularization, while `C = np.inf` disables regularization entirely. The type of penalty (L1, L2, or elastic‑net) is set via `penalty` and `l1_ratio`; for example, `penalty='l1'` with `C=0.1` applies a strong L1 penalty, whereas `penalty='elasticnet'` with `l1_ratio=0.5` mixes L1 and L2 equally. The solver you choose must support the chosen penalty (e.g., `saga` for elastic‑net, `liblinear` for L1 or L2, `lbfgs` for L2 only) [1][5].
+In scikit‑learn’s `LogisticRegression`, regularization is controlled by the parameter `C`, which is the inverse of the regularization strength. A smaller `C` value means stronger regularization, while `C = np.inf` disables regularization entirely [1]. The type of penalty (L1, L2, or elastic‑net) is set via the `penalty` and `l1_ratio` parameters; for example, `penalty='l1'` with `l1_ratio=1` gives a pure L1 penalty, and `l1_ratio=0` gives a pure L2 penalty [4].  
 
-**Key points**
-1. `C` is the inverse of regularization strength; smaller values → stronger regularization.  
-2. `penalty` and `l1_ratio` determine the penalty type; `l1_ratio=0` → L2, `l1_ratio=1` → L1, intermediate values → elastic‑net.  
-3. Solver compatibility matters: `saga` supports elastic‑net, `liblinear` supports L1/L2, others only L2.  
-4. `C = np.inf` gives an unpenalized model.",False,,0.626,True,True,"1,5",,scikit-learn.org/stable/modules/generated/sklearn.linear_model.LogisticRegression.html | scikit-learn.org/stable/modules/generated/sklearn.linear_model.LogisticRegression.html,20.7,0.87,,False,,,,
+**Key points**  
+1. `C` is the inverse of regularization strength; smaller values → stronger regularization [1].  
+2. `C = np.inf` results in an unpenalized model [1].  
+3. The penalty type is chosen with `penalty` and `l1_ratio`; `l1_ratio=0` for L2, `l1_ratio=1` for L1, and intermediate values for elastic‑net [4].  
+4. Different solvers support different penalties: e.g., `liblinear` supports L1 and L2, `saga` supports elastic‑net, while others support only L2 or no regularization [5].",False,,0.626,True,True,"1,4,5",,scikit-learn.org/stable/modules/generated/sklearn.linear_model.LogisticRegression.html | scikit-learn.org/stable/modules/generated/sklearn.linear_model.LogisticRegression.html | scikit-learn.org/stable/modules/generated/sklearn.linear_model.LogisticRegression.html,46.6,0.57,0,False,,,,
 q36,direct,True,How do I detect outliers in my data?,Use outlier detection estimators such as IsolationForest or LocalOutlierFactor,"**Answer**  
-To detect outliers in a dataset you can use scikit‑learn’s novelty‑and‑outlier‑detection tools. Two common approaches are the **Elliptic Envelope** (robust covariance estimation) and the **Local Outlier Factor** (LOF) which flags points with a much lower local density than their neighbors.  
+To detect outliers in your data you can use scikit‑learn’s novelty and outlier detection tools such as the Local Outlier Factor or the Elliptic Envelope, which estimate local density or robust covariance to flag observations that deviate from the majority of the data [2, 4]. For regression problems, robust regression models can also help identify outlying target values or predictors by fitting a model that is less sensitive to corrupt data [1, 3].
 
 **Key points**  
-1. **Elliptic Envelope** fits a robust estimate of location and covariance (e.g., using `covariance.MinCovDet`) and flags observations that lie far from the estimated ellipsoid.  
-2. **Local Outlier Factor** computes a density‑based score; points with a significantly smaller density than their `n_neighbors` are considered outliers. The default `n_neighbors=20` works well in many cases, but if the outlier proportion is >10 % you may increase it (e.g., to 35) [2].  
-3. Both methods are sensitive to the fraction of outliers and the dimensionality of the data; robust fitting becomes harder in high‑dimensional settings [1].  
-4. For regression problems, robust regression models can also mitigate the influence of outliers in the target variable [3].",False,,0.6078,True,True,"1,2,3",,scikit-learn.org/stable/modules/linear_model.html | scikit-learn.org/stable/modules/outlier_detection.html | scikit-learn.org/stable/modules/linear_model.html,22.9,1.32,,True,,,,
+1. Outliers can appear in the feature matrix \(X\) or the target vector \(y\); robust methods handle both cases [1].  
+2. Local Outlier Factor (LOF) assumes that normal instances have a local density similar to their neighbors; abnormal points have much smaller density, and the number of neighbors \(n_{\text{neighbors}}\) is typically set to 20 or increased if outliers exceed 10 % of the data [2].  
+3. Elliptic Envelope uses a robust estimate of location and covariance (e.g., MinCovDet) to assess outlyingness, suitable for Gaussian‑like data [4].  
+4. Robust regression aims to fit a model in the presence of outliers or modeling errors, providing a more reliable fit when data are corrupted [3].",False,,0.6078,True,True,"1,2,3,4",,scikit-learn.org/stable/modules/linear_model.html | scikit-learn.org/stable/modules/outlier_detection.html | scikit-learn.org/stable/modules/linear_model.html | scikit-learn.org/stable/modules/outlier_detection.html,43.6,1.16,0,True,,,,
 q37,concept,True,How do I measure feature importance with permutation importance?,Shuffle one feature at a time and measure how much the score drops ; A large drop means the model relies on that feature,"**Answer**  
-To measure feature importance with permutation importance in scikit‑learn, use the `permutation_importance` function on a fitted estimator and a held‑out dataset. The function shuffles each feature a specified number of times (`n_repeats`) and records how much the model’s score degrades, giving an importance estimate that is model‑agnostic and can be repeated to assess variance [3].
+To measure feature importance with permutation importance in scikit‑learn, use the `permutation_importance` function on a fitted estimator and a held‑out dataset. The function shuffles each feature many times (controlled by `n_repeats`) and records how much the model’s score degrades, giving an importance estimate that reflects the feature’s contribution to that particular model [3].  
 
 **Key points**  
-1. Fit your estimator (e.g., `RandomForestClassifier`) on training data.  
-2. Call `permutation_importance(estimator, X_test, y_test, n_repeats=10, scoring='accuracy')`.  
-3. Inspect the returned `importances_mean` and `importances_std` to rank features and understand variability.  
-4. Remember that permutation importance reflects a feature’s contribution to *that particular model* and should be evaluated after confirming the model’s predictive power with cross‑validation or a held‑out set [1].",False,,0.7474,True,True,"1,3",,scikit-learn.org/stable/modules/permutation_importance.html | scikit-learn.org/stable/modules/permutation_importance.html,17.5,1.18,,True,,,,
+1. `permutation_importance` is model‑agnostic and can be applied to any fitted estimator [2].  
+2. The importance reflects how much the model relies on a feature, not the feature’s intrinsic predictive value [1, 3].  
+3. The `n_repeats` parameter controls the number of shuffles and thus the variance of the importance estimate [3].  
+4. It is best to evaluate the model on a held‑out set or via cross‑validation before computing importances to avoid misleading results from a poorly performing model [1].",False,,0.7474,True,True,"1,2,3",,scikit-learn.org/stable/modules/permutation_importance.html | scikit-learn.org/stable/modules/permutation_importance.html | scikit-learn.org/stable/modules/permutation_importance.html,46.5,1.78,0,True,,,,
 q38,concept,True,How can I change the decision threshold of a classifier?,By default the threshold is 0.5 on predicted probabilities ; TunedThresholdClassifierCV tunes the threshold; FixedThresholdClassifier sets it manually,"**Answer**  
-In scikit‑learn you can change the decision threshold either by letting the library find an optimal one with `TunedThresholdClassifierCV` or by setting a fixed value with `FixedThresholdClassifier`.  
+You can change the decision threshold of a classifier in scikit‑learn by either letting the library find an optimal threshold with `TunedThresholdClassifierCV` or by setting a fixed value manually with `FixedThresholdClassifier` [1][4].
 
 **Key points**  
-1. `TunedThresholdClassifierCV` tunes the threshold internally using cross‑validation and selects the value that maximizes a chosen metric (default balanced accuracy)【1】【2】.  
-2. If you already have a trained model and just want to adjust the threshold, use `cv=""prefit""` with `TunedThresholdClassifierCV`【3】.  
-3. To set a specific threshold manually, wrap your estimator in `FrozenEstimator` and pass it to `FixedThresholdClassifier`【4】.  
-4. The tuned threshold can be very different from the default 0.5, as shown by the example where the optimal threshold was around 0.02【5】.",False,,0.7187,True,False,,,,29.2,0.94,,False,,,,
+1. `TunedThresholdClassifierCV` tunes the threshold using internal cross‑validation to maximize a chosen metric, such as balanced accuracy by default [1][2].  
+2. The tuned threshold can be set to a specific value by wrapping the estimator with `FrozenEstimator` and passing it to `FixedThresholdClassifier` if you do not want the model to be refit [4].  
+3. When using `TunedThresholdClassifierCV`, you can control the metric via the `scoring` parameter and limit cross‑validation resources with the `cv` parameter or use `cv=""prefit""` if the model is already trained [3].",False,,0.7187,True,True,"1,2,3,4",,scikit-learn.org/stable/modules/classification_threshold.html | scikit-learn.org/stable/modules/classification_threshold.html | scikit-learn.org/stable/modules/classification_threshold.html | scikit-learn.org/stable/modules/classification_threshold.html,56.6,0.74,0,False,,,,
 q39,api,True,How does train_test_split work and how do I make the split reproducible?,It splits arrays into random train and test subsets ; Set random_state to get the same split every time,"**Answer**  
-`train_test_split` shuffles the data (unless `shuffle=False`) and then splits it into training and test subsets.  
-To make the split reproducible, pass a fixed `random_state` (an int or a `RandomState` instance) to the function.  
+`train_test_split` shuffles the data (unless `shuffle=False`) and then splits it into training and test subsets according to the `test_size` or `train_size` parameters. To make the split reproducible, pass a fixed `random_state` (an int or a `RandomState` instance) to the function; the same seed will produce the same split every time [1][3].  
 
 **Key points**  
-1. `random_state` controls the shuffling; using the same value gives the same split each run.  
-2. Example:  
-   ```python
-   from sklearn.model_selection import train_test_split
-   X_train, X_test, y_train, y_test = train_test_split(
-       X, y, test_size=0.2, random_state=42)
-   ```  
-   This will produce identical train/test sets every time it is executed.  
-3. If you want to reuse the same RNG across multiple calls, create a `RandomState` once and pass it to all functions that accept `random_state` [3].",False,,0.7202,True,True,3,,scikit-learn.org/stable/common_pitfalls.html,24.1,0.75,,False,,,,
+1. The function accepts `test_size` or `train_size` to control the proportion of data in each split [1][2].  
+2. Setting `shuffle=True` (default) shuffles the data before splitting; `shuffle=False` disables shuffling and requires `stratify=None` [1].  
+3. Reproducibility is achieved by providing a constant `random_state` value or a `RandomState` object, which seeds the internal random number generator used for shuffling [3].  
+4. The split is returned as a list of arrays: `[X_train, X_test, y_train, y_test]` (or more if more arrays are supplied) [1][5].",False,,0.7202,True,True,"1,2,3,5",,scikit-learn.org/stable/modules/generated/sklearn.model_selection.train_test_split.html | scikit-learn.org/stable/modules/generated/sklearn.model_selection.train_test_split.html | scikit-learn.org/stable/common_pitfalls.html | scikit-learn.org/stable/modules/generated/sklearn.model_selection.train_test_split.html,50.9,0.89,0,False,,,,
 q40,traceback,True,sklearn.exceptions.NotFittedError: This StandardScaler instance is not fitted yet. Call 'fit' with appropriate arguments before using this estimator.,NotFittedError is raised when an estimator is used before fitting ; Call fit (or fit_transform) before transform or predict,"**Likely cause**  
-You are calling `transform` (or another method that requires fitted parameters) on a `StandardScaler` that has never had `fit` called on it. The scaler has no stored mean or scale values, so scikit‑learn raises a `NotFittedError` [1].
+The `StandardScaler` object was used to transform data before it was fitted, which raises a `NotFittedError` [1].
 
 **What to check**  
-1. Ensure that you call `scaler.fit(X)` (or `scaler.fit_transform(X)`) before any subsequent use of the scaler.  
-2. If you are using the scaler inside a pipeline or a meta‑estimator, verify that the pipeline’s `fit` method is being executed and that the scaler receives the data during that call.
+1. Ensure that `scaler.fit(X)` (or `scaler.fit_transform(X)`) is called before any `scaler.transform(X)` or `scaler.inverse_transform(X)` [1].  
+2. If the scaler is part of a pipeline, confirm that the pipeline’s `fit` method was executed on the training data; otherwise the scaler inside the pipeline remains unfitted [1].
 
 **Why this helps**  
-`StandardScaler` computes the mean and standard deviation of the training data during `fit`. These statistics are then used in `transform`. Without them, the scaler cannot perform scaling, so scikit‑learn explicitly prevents its use until it is fitted.",False,,0.65,True,True,1,,scikit-learn.org/stable/modules/generated/sklearn.exceptions.NotFittedError.html,35.8,0.77,,True,,,,
+`StandardScaler` computes the mean and standard deviation during `fit`; without these statistics it cannot scale new data, so attempting to use it before fitting triggers the `NotFittedError` exception [1].",False,,0.65,True,True,1,,scikit-learn.org/stable/modules/generated/sklearn.exceptions.NotFittedError.html,55.5,1.52,0,True,,,,
 q41,direct,True,How do I build a Pipeline that chains preprocessing and a model?,"Pipeline chains steps as (name, estimator) pairs ; make_pipeline is a shortcut that names the steps automatically","**Answer**  
-A scikit‑learn `Pipeline` chains preprocessing transformers and a final estimator (e.g., a classifier).  
-Define each step as a tuple `(name, estimator)` and pass the list to `Pipeline`.  
-The last step can be any estimator; all preceding steps must implement `fit` and `transform` [1][3].
+A scikit‑learn `Pipeline` chains preprocessing transformers and a final estimator (e.g., a classifier or regressor). Each step except the last must implement `fit` and `transform`; the last step only needs `fit` and may expose `predict` or `transform` depending on its type [1][3].  
 
-**Key points**
-
-1. **Create the steps**  
-   ```python
-   from sklearn.pipeline import Pipeline
-   from sklearn.preprocessing import StandardScaler
-   from sklearn.linear_model import LogisticRegression
-
-   steps = [
-       ('scaler', StandardScaler()),          # transformer
-       ('clf', LogisticRegression())          # final estimator
-   ]
-   ```
-
-2. **Build the pipeline**  
-   ```python
-   pipe = Pipeline(steps)
-   ```
-
-3. **Fit and predict**  
-   ```python
-   pipe.fit(X_train, y_train)      # fits scaler then classifier
-   predictions = pipe.predict(X_test)   # uses the same chain
-   ```
-
-4. **Access intermediate transformers**  
-   ```python
-   scaled_X = pipe.named_steps['scaler'].transform(X)   # optional
-   ```
-
-5. **Optional caching** – set `memory` to a directory to cache intermediate results [3].
-
-This pattern ensures that the same preprocessing is applied during cross‑validation and final training, as described in the documentation.",False,,0.6075,True,True,"1,3",,scikit-learn.org/stable/modules/compose.html | scikit-learn.org/stable/modules/generated/sklearn.pipeline.Pipeline.html,22.4,0.82,,False,,,,
+**Key points**  
+1. Define a list of tuples `steps = [('preprocess', transformer), ('model', estimator)]` and pass it to `Pipeline(steps)` [1][3].  
+2. Call `pipeline.fit(X_train, y_train)` to train all steps in order; the pipeline then behaves like the last estimator, e.g., `pipeline.predict(X_test)` [1][2].  
+3. Optionally use `memory` to cache intermediate transformers and `verbose=True` to see progress [5].  
+4. Access individual steps via `pipeline.named_steps['preprocess']` if needed [5].",False,,0.6075,True,True,"1,2,3,5",,scikit-learn.org/stable/modules/compose.html | scikit-learn.org/stable/modules/compose.html | scikit-learn.org/stable/modules/generated/sklearn.pipeline.Pipeline.html | scikit-learn.org/stable/modules/generated/sklearn.pipeline.Pipeline.html,45.4,0.79,0,False,,,,
 q42,error,True,What does ConvergenceWarning mean?,ConvergenceWarning is a custom warning that signals convergence problems,"**Answer**  
-A `ConvergenceWarning` is a warning issued by scikit‑learn when an estimator that uses iterative optimisation reaches the maximum number of iterations (`max_iter`) without meeting its convergence criterion. It signals that the algorithm may not have found a stable solution and that the fitted model might be sub‑optimal.  
+A `ConvergenceWarning` is a custom warning in scikit‑learn that is raised when an estimator that uses iterative optimisation reaches the maximum number of iterations (`max_iter`) without converging to a solution [2]. It signals that the algorithm may not have found a stable optimum within the allowed iterations [1].
 
 **Key points**  
-1. It is raised when `max_iter` iterations are performed without convergence.  
-2. The warning is a subclass of `sklearn.exceptions.ConvergenceWarning` and is meant to alert users to potential issues in the fitting process.  
-3. It does not stop execution; the model is still returned, but its performance may be affected.  
-
-**What to check**  
-1. Verify the value of `max_iter` and consider increasing it if the model is expected to need more iterations.  
-2. Inspect the convergence diagnostics (e.g., `n_iter_`, `converged_` attributes if available) to see how many iterations were actually run and whether the algorithm reported convergence.  
-
-**Why this helps**  
-The warning informs you that the optimisation routine did not finish within the allotted iterations, which can lead to a model that has not fully learned the underlying patterns. Adjusting `max_iter` or other optimisation parameters can help achieve a better fit.",False,,0.6146,True,False,,,,14.2,1.47,,True,,,,
-q43,unanswerable,False,How do I fix SettingWithCopyWarning in pandas?,The assistant should say that the indexed documentation does not contain the answer,The indexed documentation does not seem to contain a reliable answer to this question.,True,low_retrieval_score,0.3995,,,,,,20.1,0.0,,False,,,,
-q44,unanswerable,False,How do I train a neural network with a PyTorch DataLoader and an optimizer?,The assistant should say that the indexed documentation does not contain the answer,The indexed documentation does not seem to contain a reliable answer to this question.,True,low_retrieval_score,0.3748,,,,,,25.1,0.0,,False,,,,
-q45,unanswerable,False,How do I deploy a Django app to AWS Elastic Beanstalk?,The assistant should say that the indexed documentation does not contain the answer,The indexed documentation does not seem to contain a reliable answer to this question.,True,low_retrieval_score,0.2972,,,,,,23.3,0.0,,False,,,,
+1. The warning is triggered after `max_iter` iterations if convergence is not achieved [2].  
+2. It is issued by the `sklearn.exceptions.ConvergenceWarning` class, which was moved from `sklearn.utils` in version 0.18 [1].  
+3. The warning does not stop execution; it merely informs the user that the fitted model may not be optimal [1].",False,,0.6146,True,True,"1,2",,scikit-learn.org/stable/modules/generated/sklearn.exceptions.ConvergenceWarning.html | scikit-learn.org/stable/glossary.html,29.6,0.41,0,True,,,,
+q43,unanswerable,False,How do I fix SettingWithCopyWarning in pandas?,The assistant should say that the indexed documentation does not contain the answer,The indexed documentation does not seem to contain a reliable answer to this question.,True,low_retrieval_score,0.3995,,,,,,43.1,0.0,0,False,,,,
+q44,unanswerable,False,How do I train a neural network with a PyTorch DataLoader and an optimizer?,The assistant should say that the indexed documentation does not contain the answer,The indexed documentation does not seem to contain a reliable answer to this question.,True,low_retrieval_score,0.3748,,,,,,73.6,0.0,0,False,,,,
+q45,unanswerable,False,How do I deploy a Django app to AWS Elastic Beanstalk?,The assistant should say that the indexed documentation does not contain the answer,The indexed documentation does not seem to contain a reliable answer to this question.,True,low_retrieval_score,0.2972,,,,,,58.0,0.0,0,False,,,,
 q46,unanswerable,False,How do I tune XGBoost hyperparameters such as learning_rate and max_depth?,The assistant should say that the indexed documentation does not contain the answer,"**Answer**  
-To tune XGBoost‑style hyperparameters such as `learning_rate` and `max_depth` you adjust the `learning_rate` parameter, which controls the shrinkage of each tree’s contribution, and the `max_depth` parameter, which limits the depth of each weak learner tree. Smaller `learning_rate` values typically require more trees (`n_estimators`) to achieve the same training error, and can improve test performance when combined with early stopping [5].  
+To tune XGBoost‑style hyperparameters such as `learning_rate` and `max_depth` you adjust the `learning_rate` parameter to control the shrinkage of each tree’s contribution and set `max_depth` to limit the depth of each weak learner. Smaller `learning_rate` values usually require more trees (`n_estimators`) to achieve the same training error, and a lower `max_depth` can help prevent overfitting [1, 5].
 
 **Key points**  
-1. `learning_rate` scales the step length of the gradient descent procedure and interacts strongly with `n_estimators` [5].  
-2. `max_depth` limits the size of each tree; setting it to a smaller value (e.g., 1–5) reduces overfitting and speeds up training [1].  
-3. Empirical practice is to set `learning_rate` ≤ 0.1 and increase `n_estimators` accordingly, often using early stopping to find the optimal number of trees [5].",False,,0.5142,,True,"1,5",,scikit-learn.org/stable/modules/ensemble.html | scikit-learn.org/stable/modules/ensemble.html,38.6,0.82,0.0,False,,,,
-q47,unanswerable,False,What is the capital of France?,The assistant should say that the indexed documentation does not contain the answer,The indexed documentation does not seem to contain a reliable answer to this question.,True,low_retrieval_score,0.2254,,,,,,26.2,0.0,,False,,,,
-q48,unanswerable,False,Give me a recipe for chocolate cake.,The assistant should say that the indexed documentation does not contain the answer,The indexed documentation does not seem to contain a reliable answer to this question.,True,low_retrieval_score,0.1638,,,,,,18.2,0.0,,False,,,,
-q49,unanswerable,False,How do I build a convolutional neural network with TensorFlow Keras?,The assistant should say that the indexed documentation does not contain the answer,The indexed documentation does not seem to contain a reliable answer to this question.,True,low_retrieval_score,0.2496,,,,,,25.1,0.0,,False,,,,
-q50,unanswerable,False,How do I merge two pandas DataFrames on a common column?,The assistant should say that the indexed documentation does not contain the answer,The indexed documentation does not seem to contain a reliable answer to this question.,True,low_retrieval_score,0.4273,,,,,,31.9,0.0,0.0,False,,,,
-q51,unanswerable,False,How do I run several tasks concurrently with asyncio?,The assistant should say that the indexed documentation does not contain the answer,The indexed documentation does not seem to contain a reliable answer to this question.,True,low_retrieval_score,0.3768,,,,,,18.3,0.0,,False,,,,
+1. `learning_rate` scales the step length of the gradient descent and interacts strongly with `n_estimators` – smaller rates need more estimators to maintain training error [5].  
+2. `max_depth` limits the size of each tree; setting it to a lower value (e.g., 3–5) can reduce overfitting while keeping the model expressive [1].  
+3. When tuning, consider using cross‑validation and the `cv_results_` attribute to evaluate different combinations of `learning_rate`, `max_depth`, and `n_estimators` [4].",False,,0.5142,,True,"1,4,5",,scikit-learn.org/stable/modules/ensemble.html | scikit-learn.org/stable/modules/grid_search.html | scikit-learn.org/stable/modules/ensemble.html,43.4,0.85,0,False,,,,
+q47,unanswerable,False,What is the capital of France?,The assistant should say that the indexed documentation does not contain the answer,The indexed documentation does not seem to contain a reliable answer to this question.,True,low_retrieval_score,0.2254,,,,,,53.9,0.0,0,False,,,,
+q48,unanswerable,False,Give me a recipe for chocolate cake.,The assistant should say that the indexed documentation does not contain the answer,The indexed documentation does not seem to contain a reliable answer to this question.,True,low_retrieval_score,0.1638,,,,,,47.2,0.0,0,False,,,,
+q49,unanswerable,False,How do I build a convolutional neural network with TensorFlow Keras?,The assistant should say that the indexed documentation does not contain the answer,The indexed documentation does not seem to contain a reliable answer to this question.,True,low_retrieval_score,0.2711,,,,,,49.2,0.0,0,False,,,,
+q50,unanswerable,False,How do I merge two pandas DataFrames on a common column?,The assistant should say that the indexed documentation does not contain the answer,The indexed documentation does not seem to contain a reliable answer to this question.,True,low_retrieval_score,0.4273,,,,,,46.7,0.0,0,False,,,,
+q51,unanswerable,False,How do I run several tasks concurrently with asyncio?,The assistant should say that the indexed documentation does not contain the answer,The indexed documentation does not seem to contain a reliable answer to this question.,True,low_retrieval_score,0.3768,,,,,,29.3,0.0,0,False,,,,

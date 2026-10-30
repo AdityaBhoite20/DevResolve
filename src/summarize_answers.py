@@ -32,7 +32,15 @@ for column in ["manual_correct", "manual_grounded", "manual_citations_ok"]:  # t
     if len(values) > 0:  # at least one row graded
         rows.append([column, round(float(values.mean()), 3), len(values)])
     else:
-        print("Note:", column, "has no grades yet")  # reminder
+        print("Note:", column, "has no manual grades (fine if you use judge_answers.py instead)")  # reminder
+
+judged_file = config.EXPERIMENTS_DIR / "answers_judged.csv"  # written by judge_answers.py
+if judged_file.exists():  # an LLM judge graded some answers
+    judged = pd.read_csv(judged_file)  # read the grades
+    for column in ["judge_correct", "judge_grounded", "judge_citations_ok"]:  # the three LLM-judged metrics
+        values = pd.to_numeric(judged[column], errors="coerce").dropna()  # only the readable grades
+        if len(values) > 0:
+            rows.append(["llm_" + column, round(float(values.mean()), 3), len(values)])  # these are LLM-judged, not human grades
 
 summary = pd.DataFrame(rows, columns=["metric", "value", "n"])  # build the summary table
 summary.to_csv(config.EXPERIMENTS_DIR / "answer_summary.csv", index=False)  # save it

@@ -1,5 +1,9 @@
 metric,value,n
-abstained_correctly_on_unanswerable,0.778,9
-abstained_wrongly_on_answerable,0.071,42
-answers_with_valid_citations_auto,0.538,39
-answers_with_gold_evidence_in_context,0.949,39
+abstained_correctly_on_unanswerable,0.889,9
+abstained_wrongly_on_answerable,0.048,42
+answers_with_valid_citations_auto,1.0,40
+answers_that_needed_a_citation_retry,0.0,40
+answers_with_gold_evidence_in_context,0.95,40
+llm_judge_correct,0.85,20
+llm_judge_grounded,0.7,20
+llm_judge_citations_ok,0.65,20

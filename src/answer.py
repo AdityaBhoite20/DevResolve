@@ -21,12 +21,17 @@ def llm_is_configured():
     return True
 
 
-def call_llm(user_prompt):
+def call_llm(user_prompt, system_prompt=None, model=None):
     # sends the prompt to the LLM and returns the answer text
+    # system_prompt and model are optional: by default we use the DevResolve prompt and the model from .env
+    if system_prompt is None:  # no special instructions given
+        system_prompt = SYSTEM_PROMPT  # use the normal DevResolve instructions
+    if model is None:  # no special model given
+        model = config.LLM_MODEL  # use the model from .env
     from openai import OpenAI  # imported here so the rest of the project works without the library
     client = OpenAI(api_key=config.LLM_API_KEY, base_url=config.LLM_BASE_URL or None, max_retries=0, timeout=config.LLM_TIMEOUT_SECONDS)  # we do the retrying ourselves, so every problem is visible
     messages = [
-        {"role": "system", "content": SYSTEM_PROMPT},
+        {"role": "system", "content": system_prompt},
         {"role": "user", "content": user_prompt},
     ]  # the conversation we send
     settings = {"temperature": 0}  # extra settings for the call (temperature 0 makes answers more repeatable)
@@ -35,7 +40,7 @@ def call_llm(user_prompt):
     last_error = None  # remembers the last problem
     for attempt in range(4):  # try up to 4 times (free plans sometimes limit the speed)
         try:
-            response = client.chat.completions.create(model=config.LLM_MODEL, messages=messages, **settings)  # ask the LLM
+            response = client.chat.completions.create(model=model, messages=messages, **settings)  # ask the LLM
             usage = getattr(response, "usage", None)  # token counts, if the provider sends them
             if usage is not None:
                 print("   LLM tokens - prompt:", getattr(usage, "prompt_tokens", "?"), "| completion:", getattr(usage, "completion_tokens", "?"))
