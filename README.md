@@ -1,6 +1,6 @@
 # DevResolve
 
-A small RAG (retrieval-augmented generation) assistant for **Python errors** and **scikit-learn questions**.
+A small RAG (retrieval-augmented generation) system for **Python errors** and **scikit-learn questions**.
 It searches a local copy of the official Python and scikit-learn documentation, gives the best passages to an LLM,
 and returns a short answer with numbered citations. If the documentation does not contain the answer, it says so.
 
