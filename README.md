@@ -139,14 +139,20 @@ the number points to a retrieved passage.
 data/sources.csv            the 51 documentation pages (edit to add or remove pages)
 data/eval/questions.jsonl   the test questions with gold pages and keywords
 src/config.py               every setting in one place
-src/fetch_docs.py           download pages          src/parse_docs.py   HTML -> text sections
-src/chunk_docs.py           sections -> chunks      src/build_index.py  embeddings + saved index
-src/search.py               vector + BM25 search    src/bm25.py         BM25 written from scratch
-src/answer.py               LLM answer + checks     src/prompts.py      prompt text
-src/run_eval.py             retrieval experiments   src/run_answers.py  answer all test questions
-src/check_regression.py     recall@5 vs baseline    src/summarize_answers.py  answer-quality summary
+src/fetch_docs.py           download pages
+src/parse_docs.py           HTML -> text sections       
+src/chunk_docs.py           sections -> chunks
+src/build_index.py          embeddings + saved index      
+src/search.py               vector + BM25 search
+src/bm25.py                 BM25 written from scratch    
+src/answer.py               LLM answer + checks
+src/prompts.py              prompt text     
+src/run_eval.py             retrieval experiments
+src/run_answers.py          answer all test questions
+src/summarize_answers.py    answer-quality summary   
+src/check_regression.py     recall@5 vs baseline    
 app/streamlit_app.py        Ask / Evaluation / Corpus and usage
-tests/                      unit tests              docs/SYSTEM_CARD.md  intended use and limits
+tests/                      unit tests      
 ```
 
 ## Keeping it up to date
@@ -155,7 +161,7 @@ The documentation changes with every release. To refresh: delete `data/raw`, run
 `python src/check_regression.py`. A FAIL means recall dropped and the new pages or settings need a look.
 Every index stores the embedding model, chunk settings and documentation versions in `indexes/final/index_info.json`.
 
-## Limitations (please keep these in your write-up)
+## Limitations 
 
 - Answers come only from 51 pages. Anything else (pandas, PyTorch, ...) should be refused, and how well that works is measured, not guaranteed.
 - The citation check only verifies that a cited number points to a retrieved passage. Whether the passage supports the claim is checked by hand on a sample.
@@ -164,6 +170,3 @@ Every index stores the embedding model, chunk settings and documentation version
 - No real users: the usage log only shows what you tried yourself. This is a learning project, not a production service.
 - Do not paste proprietary code into the app if you use a hosted LLM. By default the query log stores the first 80 characters of each question; set `LOG_QUESTION_TEXT = False` in `src/config.py` to store none.
 
-## Optional: Docker
-
-`Dockerfile` runs the app in a container (build after steps 1-5). It was written without being tested on a real machine.
